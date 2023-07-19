@@ -1,8 +1,9 @@
 #!/bin/sh
-CHROME_VERSION=$(google-chrome --version | sed -En 's/.* ([0-9]+).*/\1/p')
-DRIVER_VERSION=$(chromedriver --version | sed -En 's/.* ([0-9.]+).*/\1/p')
+CHROME_VERSION="$(google-chrome --version | sed -En 's/.* ([0-9]+).*/\1/p')"
+DRIVER_VERSION="$(chromedriver --version | sed -En 's/.* ([0-9.]+).*/\1/p')"
 JSON="$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json)"
 LATEST_DRIVER_VERSION="$(echo "$JSON" | jq -r .channels.Stable.version)"
+echo "$LATEST_DRIVER_VERSION" | grep ^"$CHROME_VERSION" || exit 0
 [ "$DRIVER_VERSION" = "$LATEST_DRIVER_VERSION" ] && exit 0
 DIR="$(mktemp -d)"
 curl -so "$DIR"/chromedriver.zip "$(echo "$JSON" | jq -r .channels.Stable.downloads.chromedriver[0].url)"
